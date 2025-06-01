@@ -28,14 +28,37 @@ public class ProductoJpaController implements Serializable{
 	}
 	
 	public void registrar(Producto data) throws Exception {		
-		
+		 EntityManager em = getEntityManager();
+		    try {
+		        em.getTransaction().begin();
+		        em.persist(data);
+		        em.getTransaction().commit();
+		    } catch (Exception e) {
+		        if (em.getTransaction().isActive()) {
+		            em.getTransaction().rollback();
+		        }
+		        throw e;
+		    } finally {
+		        em.close();
+		    }
 	}
 
 	public List<Producto> findAll() {
-		
+		EntityManager em = getEntityManager();
+	    try {
+	        TypedQuery<Producto> query = em.createQuery("SELECT p FROM Producto p", Producto.class);
+	        return query.getResultList();
+	    } finally {
+	        em.close();
+	    }
 	}
 	
 	public Producto buscarById(int codigo) {		
-		
+		EntityManager em = getEntityManager();
+	    try {
+	        return em.find(Producto.class, codigo);
+	    } finally {
+	        em.close();
+	    }
 	}
 }
